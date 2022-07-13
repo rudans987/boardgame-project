@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--js-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<!--bootstrap5 & bulma css-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+
+    <title>Home | MIMO</title>
+<!--google font-->
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+        .mytitle > button {
+            width: 200px;
+            height: 50px;
+
+            background-color: transparent;
+            color: white;
+
+            border-radius: 50px;
+            border: 1px solid white;
+
+            margin-top: 10px;
+        }
+
+        .mytitle > button:hover {
+            border: 2px solid white;
+        }
+
+
+        .mycards {
+            margin: 20px auto 0px auto;
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        .mypost {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto 0px auto;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px gray;
+
+            display: none;
+        }
+        .mypost>p:first-child{
+            padding-bottom: 15px;
+        }
+
+        .mybtns {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 20px;
+        }
+
+        .mybtns > button {
+            margin-right: 10px;
+        }
+        .row, .time-row{
+            margin-bottom: 10px;
+        }
+        .card-img{
+            height: 300px;
+            object-fit: cover;
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: 'GET',
+                url: '/game',
+                data: {},
+                success: function (response) {
+                    games = response['games']
+                    console.log(games)
+                    for(let i= 0; i < games.length; i++){
+                        const title = games[i]['title']
+                        const image = games[i]['img_url']
+                        const star = games[i]['level']
+
+                        let star_icon = '⭐️'.repeat(star)
+
+                        let card_html =
+                            `<div onclick="window.location.href='/detail/${title}'" class="col">
+                                <div class="card h-100">
+                                    <img src="${image}" class="card-img-top card-img" >
+                                        <div class="card-body">
+                                            <h5 class="card-title">${title}</h5>
+                                            <p>${star_icon}</p>
+                                        </div>
+                                </div>
+                            </div>`
+
+                        $('#cards-box').append(card_html)
+
+                    }
+                }
+            })
+        }
+
+        function posting() {
+            let url = $('#url').val()
+            let title = $('#title').val()
+            let member = $('#member').val()
+            let level = $('#level').val()
+            let time = $('#min').val()
+            let desc = $('#desc').val()
+
+            $.ajax({
+                type: 'POST',
+                url: '/game',
+                data: {
+                    url_give: url,
+                    title_give: title,
+                    member_give: member,
+                    level_give: level,
+                    time_give: time,
+                    desc_give: desc
+                },
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function open_box() {
+            $('#post-box').show()
+        }
+
+        function close_box() {
+            $('#post-box').hide()
+        }
+
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert('로그아웃!')
+            window.location.href = "/login"
+        }
+    </script>
+</head>
+
+<body>
+<section>
+    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand navbar_title">
+            <a class="navbar-item" href="/">
+                <strong class="is-sparta"
+                        style="font-family: 'Stylish', sans-serif;font-size: larger;">MIMO</strong>
+            </a>
+        </div>
+        <button type="button" class="btn btn-warning" onclick="open_box()">보드게임 기록하기</button>
+        <p class="nick_name">회원 아이디:{{user_info.username}}</p>
+        <button class="level-item button is-sparta is-medium logout_btn" onclick="sign_out()">로그아웃</button>
+    </nav>
+</section>
+<form class="mypost" id="post-box" enctype="multipart/form-data" method="post">
+    <div class="form-floating mb-3">
+        <input type="url" class="form-control" id="url" placeholder="name@example.com">
+        <label for="url">이미지 url</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input id="title" type="text" class="form-control">
+        <label>게임 이름</label>
+    </div>
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="form-floating">
+                <input type="text" class="form-control" id="member" >
+                <label for="member">인원 수</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                <select class="form-select" id="level" aria-label="Floating label select example">
+                    <option selected>--선택하기--</option>
+                    <option value="1">⭐️</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                </select>
+                <label for="level">난이도</label>
+            </div>
+        </div>
+    </div>
+    <div class="input-group time-row">
+        <input id="min" type="text" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+        <span class="input-group-text">분</span>
+    </div>
+    <div class="form-floating">
+        <textarea id="desc" class="form-control" placeholder="Leave a comment here"></textarea>
+        <label for="desc">게임 설명</label>
+    </div>
+    <div class="mybtns">
+        <button onclick="posting()" type="button" class="btn btn-dark">기록하기</button>
+        <button onclick="close_box()" type="button" class="btn btn-outline-dark">닫기</button>
+    </div>
+</form>
+<div class="mycards section">
+    <div class="row row-cols-1 row-cols-md-4 g-4" id="cards-box">
+
+    </div>
+</div>
+</body>
+
+</html>

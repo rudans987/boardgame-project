@@ -1,0 +1,57 @@
+body {
+    background-color: RGBA(213, 184, 255, 0.4);
+    min-height: 100vh;
+}
+
+.section {
+    padding: 1rem 1.5rem;
+    max-width: 750px;
+    margin: auto;
+}
+nav{
+    padding: 20px;
+}
+
+.is-sparta {
+    color: #34a3e8 !important;
+}
+
+.button.is-sparta {
+    background-color: #e8344e;
+    border-color: transparent;
+    /*글자색*/
+    color: #fff !important;
+}
+
+.button.is-sparta.is-outlined {
+    background-color: transparent;
+    border-color: #e8344e;
+    color: #e8344e !important;
+}
+
+.modal-content {
+    width: 600px;
+    max-width: 80%;
+}
+
+input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+.image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.logout_btn {
+    display: block;
+    margin-left: 20px;
+}
+
+
+.nick_name{
+    display: block;
+    margin-top: 12px;
+    margin-left: auto;
+}
